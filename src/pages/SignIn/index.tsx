@@ -50,6 +50,7 @@ const SignIn: React.FC = () => {
 
           return;
         }
+
         addToast({
           type: 'error',
           title: 'Erro na autenticação',
@@ -58,7 +59,7 @@ const SignIn: React.FC = () => {
         });
       }
     },
-    [signIn, addToast],
+    [signIn, addToast, history],
   );
 
   return (
