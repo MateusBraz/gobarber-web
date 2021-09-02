@@ -1,5 +1,4 @@
 import React, { ButtonHTMLAttributes } from 'react';
-import { boolean } from 'yup/lib/locale';
 
 import { Container } from './styles';
 

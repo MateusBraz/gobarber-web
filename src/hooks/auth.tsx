@@ -1,9 +1,18 @@
 import React, { createContext, useCallback, useState, useContext } from 'react';
 import api from '../services/api';
+// import api from '../services/api';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  avatarUrl: string;
+}
 
 interface AuthState {
   token: string;
-  user: Object;
+  user: User;
 }
 
 interface SignInCredentials {
@@ -12,19 +21,22 @@ interface SignInCredentials {
 }
 
 interface AuthContextData {
-  user: Object;
+  user: User;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
+  updateUser(user: User): void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
-    // const user = localStorage.getItem('@GoBarber:token');
+    // const token = localStorage.getItem('@GoBarber:token');
     const user = localStorage.getItem('@GoBarber:user');
 
+    // user && token ?
     if (user) {
+      // api.defaults.headers.authorization = `Bearer ${token}`;
       return {
         token: 'bearer klrijntgrinneni23e2o4ninbion24in',
         user: JSON.parse(user),
@@ -44,9 +56,17 @@ const AuthProvider: React.FC = ({ children }) => {
 
     // localStorage.setItem('@GoBarber:token', token);
     // localStorage.setItem('@GoBarber:user', JSON.stringify(user));
+    // api.defaults.headers.authorization = `Bearer ${token}`;
+
+    const id = '1';
+    const name = 'Mateus Braz';
+    const avatarUrl = 'https://avatars.githubusercontent.com/u/49259178?v=4';
     const user = {
+      id,
+      name,
       email,
       password,
+      avatarUrl,
     };
     localStorage.setItem('@GoBarber:user', JSON.stringify(user));
     setData({ token: 'bearer klrijntgrinneni23e2o4ninbion24in', user });
@@ -59,8 +79,22 @@ const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState);
   }, []);
 
+  const updateUser = useCallback(
+    (user: User) => {
+      localStorage.setItem('@GoBarber:user', JSON.stringify(user));
+
+      setData({
+        token: data.token,
+        user,
+      });
+    },
+    [data.token, setData],
+  );
+
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user: data.user, signIn, signOut, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
